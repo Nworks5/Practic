@@ -4,12 +4,12 @@
 Метод: getALL()
 Входные параметры: отсутствуют
 возвращаемое значение: List<note>
-SQL - запрос SELECT note_id, title, content, created date FROM notes;
+SQL - запрос SELECT note_id, title, content, created_date FROM notes;
 
 Метод: getById()
 Входные данные: int id
 Возвращаемое значение: note
-SQL-запрос Select note_id, title, content, created date FROM notes where note_id = ?;
+SQL-запрос Select note_id, title, content, created_date FROM notes where note_id = ?;
 
 Метод: insert(entity)
 Входные данные: note note
@@ -19,7 +19,7 @@ SQL-запрос: INSERT INTO notes (title,content) VALUES (?,?);
 Метод: update(entity)
 Входные данные: note note
 Возвращаемое значение: boolean
-SQL-запрос: UPDATE notes SET title = ? where note_id = ?;
+SQL-запрос: UPDATE notes SET title = ?, content = ? WHERE note_id = ?;
 
 Метод: delete(entity)
 Входные данные: int id 
@@ -31,7 +31,7 @@ SQL-запрос: DELETE FROM notes WHERE note_id = ?;
 Метод: getALL()
 Входные параметры: отстутсвуют 
 возвращаемое значение: List<task>
-SQL - запрос SELECT task_id, note_id, task_text, is_completed FROM task;
+SQL - запрос SELECT task_id, note_id, task_text, is_complete FROM task;
 
 Метод: getById()
 Входные данные: int id
@@ -46,7 +46,7 @@ SQL-запрос: INSERT INTO task (note_id,task_text) VALUES (?,?);
 Метод: update(entity)
 Входные данные: task task
 Возвращаемое значение: boolean
-SQL-запрос: UPDATE task SET tast_text = ? where note_id = ?, is_completed = ? WHERE task_id = ?
+SQL-запрос: UPDATE task SET note_id = ?, task_text = ?, is_complete = ? WHERE task_id = ?;
 
 Метод: delete(entity)
 Входные данные: int id 
