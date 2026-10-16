@@ -137,5 +137,70 @@ SQL-запрос: DELETE FROM backup_log WHERE backup_id = ?;
 
 
 
+SQL-запросы для бизнес-логики
+
+Бизнес-операция №1: Фильтрация отчета по датам
+
+Название операции: getFilteredTimeReport
+Описание: Собирает логи времени за выбранный период и через JOIN находит названия предметов для вывода отчета
+Входные параметры: String startDate, String endDate
+Возвращаемое значение: List
+SQL-запрос:
+sql
+SELECT 
+    t.task_text AS "Название задачи",
+    SUM(tl.duration) AS "Общее время (мин)"
+FROM task t
+JOIN time_logs tl ON t.task_id = tl.task_id
+WHERE tl.start_time BETWEEN ? AND ?
+GROUP BY t.task_id, t.task_text
+ORDER BY SUM(tl.duration) DESC;
+
+Бизнес-операция №2: Получение отчета по задачам за месяц
+
+Название операции: getMonthlyTotalReport
+Описание: Суммирует все минуты по задачам за текущий календарный месяц для главного меню отчетов
+Входные параметры: String monthStartDate
+Возвращаемое значение: List
+SQL-запрос:
+sql
+SELECT 
+    t.task_text AS "Задача",
+    SUM(tl.duration) AS "Всего минут за месяц"
+FROM task t
+JOIN time_logs tl ON t.task_id = tl.task_id
+WHERE tl.start_time >= ?
+GROUP BY t.task_id, t.task_text
+ORDER BY SUM(tl.duration) DESC;
+
+Бизнес-операция №3: Просмотр списка задач с привязанными к ним заметками
+
+Название операции: getTasksWithNotesContext
+Описание: Загружает список задач вместе с названиями заметок для главного экрана
+Входные параметры: отсутствуют
+Возвращаемое значение: List
+SQL-запрос:
+sql
+SELECT 
+    t.task_id,
+    t.task_text,
+    COALESCE(n.title, 'Без категории') AS "Заметка",
+    t.is_complete
+FROM task t
+LEFT JOIN notes n ON t.note_id = n.note_id;
+
+Бизнес-операция №4: Проверка логов времени перед удалением
+
+Название операции: countTaskTimeLogs
+Описание: Считает количество сессий времени у задачи для блокировки удаления при наличии истории
+Входные параметры: int taskId
+Возвращаемое значение: int
+SQL-запрос:
+sql
+SELECT COUNT(*) AS "Количество логов"
+FROM time_logs 
+WHERE task_id = ?;
+
+
 
 
