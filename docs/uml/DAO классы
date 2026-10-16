@@ -1,1 +1,141 @@
+Описание DAO-классов и методов
+1 КЛАСС: Notes
+
+Метод: getALL()
+Входные параметры: отсутствуют
+возвращаемое значение: List<note>
+SQL - запрос SELECT note_id, title, content, created date FROM notes;
+
+Метод: getById()
+Входные данные: int id
+Возвращаемое значение: note
+SQL-запрос Select note_id, title, content, created date FROM notes where note_id = ?;
+
+Метод: insert(entity)
+Входные данные: note note
+Возвращаемое значение: int
+SQL-запрос: INSERT INTO notes (title,content) VALUES (?,?);
+
+Метод: update(entity)
+Входные данные: note note
+Возвращаемое значение: boolean
+SQL-запрос: UPDATE notes SET title = ? where note_id = ?;
+
+Метод: delete(entity)
+Входные данные: int id 
+Возвращаемое значение: boolean
+SQL-запрос: DELETE FROM notes WHERE note_id = ?;
+
+2 КЛАСС: task
+
+Метод: getALL()
+Входные параметры: отстутсвуют 
+возвращаемое значение: List<task>
+SQL - запрос SELECT task_id, note_id, task_text, is_completed FROM task;
+
+Метод: getById()
+Входные данные: int id
+Возвращаемое значение: task
+SQL-запрос Select task_id,note_id, task_text,is_complete FROM task WHERE task_id = ?;
+
+Метод: insert(entity)
+Входные данные: task task
+Возвращаемое значение: boolean
+SQL-запрос: INSERT INTO task (note_id,task_text) VALUES (?,?);
+
+Метод: update(entity)
+Входные данные: task task
+Возвращаемое значение: boolean
+SQL-запрос: UPDATE task SET tast_text = ? where note_id = ?, is_completed = ? WHERE task_id = ?
+
+Метод: delete(entity)
+Входные данные: int id 
+Возвращаемое значение: boolean
+SQL-запрос: DELETE FROM task WHERE task_id = ?;
+
+3 КЛАСС: time_logs
+
+Метод: getALL()
+Входные параметры: отстутсвуют 
+возвращаемое значение: List<time_logs>
+SQL - запрос SELECT log_id, task_id, start_time,duration, end_time FROM time_logs;
+
+Метод: getById()
+Входные данные: int id
+Возвращаемое значение: timelogs
+SQL-запрос Select log_id, task_id, start_time,duration, end_time FROM time_logs WHERE log_id = ?;
+
+Метод: insert(entity)
+Входные данные: Timelog log
+Возвращаемое значение: boolean
+SQL-запрос: INSERT INTO time_logs (task_id, start_time, duration, end_time) VALUES (?, ?, ?, ?);
+
+Метод: update(entity)
+Входные данные: Timelog log
+Возвращаемое значение: boolean
+SQL-запрос: UPDATE time_logs SET task_id = ?, start_time = ?, duration = ?, end_time = ? WHERE log_id = ?;
+
+Метод: delete(entity)
+Входные данные: int id 
+Возвращаемое значение: boolean
+SQL-запрос: DELETE FROM time_logs WHERE log_id = ?;
+
+4 КЛАСС: timer
+
+Метод: getALL()
+Входные параметры: отстутсвуют 
+возвращаемое значение: List<timer>
+SQL - запрос SELECT timer_id, task_id, start_time FROM timer;
+
+Метод: getById()
+Входные данные: int id
+Возвращаемое значение: timer
+SQL-запрос Select timer_id, task_id, start_time FROM timer WHERE timer_id = ?;
+
+Метод: insert(entity)
+Входные данные: Timer timer
+Возвращаемое значение: boolean
+SQL-запрос: INSERT INTO timer (task_id, start_time) VALUES (?, ?);
+
+Метод: update(entity)
+Входные данные: Timer timer
+Возвращаемое значение: boolean
+SQL-запрос: UPDATE timer SET task_id = ?, start_time = ? WHERE timer_id = ?;
+
+Метод: delete(entity)
+Входные данные: int id 
+Возвращаемое значение: boolean
+SQL-запрос: DELETE FROM timer WHERE timer_id = ?;
+
+5 КЛАСС: backup_log
+
+Метод: getALL()
+Входные параметры: отстутсвуют 
+возвращаемое значение: List<BackupLog>
+SQL - запрос SELECT backup_id, backup_time, file_path, status FROM backup_log;
+
+Метод: getById()
+Входные данные: int id
+Возвращаемое значение: BackupLog
+SQL-запрос SELECT backup_id, backup_time, file_path, status FROM backup_log WHERE backup_id = ?;
+
+Метод: insert(entity)
+Входные данные: BackupLog log
+Возвращаемое значение: boolean
+SQL-запрос: INSERT INTO backup_log (file_path, status) VALUES (?, ?);
+
+Метод: update(entity)
+Входные данные: BackupLog log
+Возвращаемое значение: boolean
+SQL-запрос: UPDATE backup_log SET file_path = ?, status = ? WHERE backup_id = ?;
+
+
+Метод: delete(entity)
+Входные данные: int id 
+Возвращаемое значение: boolean
+SQL-запрос: DELETE FROM backup_log WHERE backup_id = ?;
+
+
+
+
 
