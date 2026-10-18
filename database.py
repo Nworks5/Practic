@@ -12,12 +12,11 @@ class DatabaseManager:
         return conn
 
     def init_database(self):
-        """Читает ваш готовый файл init.sql и разворачивает структуру таблиц"""
-        if os.path.exists("init.sql"):
-            with open("init.sql", "r", encoding="utf-8") as f:
-                sql_script = f.read()
-            with self.get_connection() as conn:
-                conn.executescript(sql_script)
-                conn.commit()
-        else:
-            raise FileNotFoundError("Файл init.sql не найден в корневой папке проекта!")
+        """Загрузка структуры таблиц из файла init.sql"""
+        if not os.path.exists("init.sql"):
+            raise FileNotFoundError("Файл init.sql не найден!")
+        with open("init.sql", "r", encoding="utf-8") as f:
+            sql_script = f.read()
+        with self.get_connection() as conn:
+            conn.executescript(sql_script)
+            conn.commit()
