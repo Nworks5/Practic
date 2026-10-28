@@ -1,0 +1,88 @@
+# test_logic.py
+import sqlite3
+import os
+from database import DatabaseManager
+from task_dao import TaskDAO, TimerDAO, TimeLogsDAO, StudentBusinessDAO
+from logic.task_service import TaskService
+
+DB_NAME = "timetracker.db"
+db_manager = DatabaseManager(DB_NAME)
+
+def prepare_fresh_database():
+    """Сброс данных и наполнение таблиц фиксированными тест-кейсами."""
+    db_manager.init_database()
+    
+    with db_manager.get_connection() as conn:
+        conn.execute("DELETE FROM timer;")
+        conn.execute("DELETE FROM time_logs;")
+        conn.execute("DELETE FROM task;")
+        conn.execute("DELETE FROM notes;")
+        
+        # Подготовка данных для тестов логики
+        conn.execute("INSERT INTO task (task_id, task_text) VALUES (1, 'Лабораторная работа по базам данных');")
+        conn.execute("INSERT INTO task (task_id, task_text) VALUES (2, 'Тестовая пустая задача без истории');")
+        conn.execute("INSERT INTO timer (task_id, start_time) VALUES (1, '2026-10-12 12:00:00');")
+        conn.commit()
+
+def run_business_logic_tests():
+    print("[СТАРТ АВТОМАТИЧЕСКОГО ТЕСТИРОВАНИЯ СЛОЯ БИЗНЕС-ЛОГИКИ]")
+    print("-" * 70)
+
+    # Инициализация ваших DAO
+    task_dao = TaskDAO(db_manager)
+    timer_dao = TimerDAO(db_manager)
+    logs_dao = TimeLogsDAO(db_manager)
+    business_dao = StudentBusinessDAO(db_manager)
+
+    # Создание сервиса бизнес-логики
+    service = TaskService(task_dao, timer_dao, logs_dao, business_dao)
+
+    # --- ТЕСТ 1: Успешный стоп таймера ---
+    prepare_fresh_database()
+    print("Тест 1: Остановка активного таймера и расчет минут (Успешный сценарий)")
+    try:
+        result = service.stop_and_save_timer(task_id=1, stop_time="2026-10-12 12:45:00")
+        print(f"Результат выполнения функции: {result} (Время успешно перенесено в историю)")
+    except Exception as error:
+        print(f"Возникло непредвиденное исключение: {error}")
+
+    # --- ТЕСТ 2: Отрицательное время сессии ---
+    print("\nТест 2: Остановка таймера временем из прошлого (Ошибочный сценарий)")
+    prepare_fresh_database()
+    try:
+        service.stop_and_save_timer(task_id=1, stop_time="2026-10-12 11:30:00")
+        print("Ошибка: Слой бизнес-логики пропустил некорректное время!")
+    except ValueError as error:
+        print(f"Исключение безопасности успешно перехвачено. Сообщение: {error}")
+
+    # --- ТЕСТ 3: Блокировка удаления на уровне логики ---
+    print("\nТест 3: Удаление задачи при наличии сохраненных логов времени (Бизнес-правило)")
+    prepare_fresh_database()
+    service.stop_and_save_timer(task_id=1, stop_time="2026-10-12 12:45:00")  # Создаем историю логов
+    try:
+        service.safe_delete_task(task_id=1)
+        print("Ошибка: Слой логики позволил удалить задачу с историей логов!")
+    except PermissionError as error:
+        print(f"Исключение бизнес-правила успешно перехвачено. Сообщение: {error}")
+
+    # --- ТЕСТ 4: Успешное удаление пустой задачи ---
+    print("\nТест 4: Удаление чистой задачи без связанной истории (Успешный сценарий)")
+    try:
+        success = service.safe_delete_task(task_id=2)
+        print(f"Результат выполнения удаления: {success} (Задача стерта из базы)")
+    except Exception as error:
+        print(f"Возникло непредвиденное исключение: {error}")
+
+    # --- ТЕСТ 5: Неверный диапазон дат в отчете ---
+    print("\nТест 5: Запрос отчета с нарушением хронологического порядка дат (Ошибочный сценарий)")
+    try:
+        service.get_filtered_time_report(start_date="2026-10-20", end_date="2026-10-12")
+        print("Ошибка: Сформирован отчет с некорректными датами!")
+    except ValueError as error:
+        print(f"Исключение валидации успешно перехвачено. Сообщение: {error}")
+
+    print("-" * 70)
+    print("[ТЕСТИРОВАНИЕ КОМПОНЕНТОВ СЛУЖБЫ ЗАВЕРШЕНО]")
+
+if __name__ == "__main__":
+    run_business_logic_tests()
