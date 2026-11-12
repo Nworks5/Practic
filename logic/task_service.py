@@ -1,9 +1,25 @@
-# logic/task_service.py
+"""!
+@file task_service.py
+@brief Файл с основной логикой работы задач и таймера.
+"""
+
 import datetime
 from typing import List, Dict, Any
 
+
 class TaskService:
+    """!
+    @brief Класс для работы с таймерами, удалением задач и отчетами.
+    """
+
     def __init__(self, task_dao, timer_dao, time_logs_dao, business_dao):
+        """!
+        @brief Конструктор класса.
+        @param task_dao Объект для работы с таблицей задач.
+        @param timer_dao Объект для работы с таймерами.
+        @param time_logs_dao Объект для работы с логом времени.
+        @param business_dao Объект для получения отчетов.
+        """
         # Принимаем ваши готовые объекты DAO классов
         self.task_dao = task_dao
         self.timer_dao = timer_dao
@@ -11,9 +27,12 @@ class TaskService:
         self.business_dao = business_dao
 
     def stop_and_save_timer(self, task_id: int, stop_time: str) -> bool:
-        """
-        Операция 1: Остановка таймера и фиксация времени сессии.
-        Проверяет наличие активного таймера и хронологию дат.
+        """!
+        @brief Останавливает таймер и сохраняет потраченное время в историю.
+        @param task_id ID задачи.
+        @param stop_time Время остановки (формат ГГГГ-ММ-ДД ЧЧ:ММ:СС).
+        @return True, если время успешно сохранилось.
+        @throws ValueError Если таймер не найден или время остановки меньше времени старта.
         """
         if task_id <= 0:
             raise ValueError("Неверный номер задачи")
@@ -46,9 +65,11 @@ class TaskService:
         return True
 
     def safe_delete_task(self, task_id: int) -> bool:
-        """
-        Операция 2: Безопасное удаление задачи.
-        Блокирует операцию, если у задачи есть связанные логи времени.
+        """!
+        @brief Удаляет задачу, если по ней еще нет записей времени.
+        @param task_id ID задачи для удаления.
+        @return True, если задача удалена.
+        @throws PermissionError Если у задачи уже есть записанное время.
         """
         # Бизнес-операция №4 из вашего файла: Подсчет логов с помощью SQL-запроса
         with self.task_dao.db.get_connection() as conn:
@@ -63,8 +84,12 @@ class TaskService:
         return self.task_dao.delete(task_id)
 
     def get_filtered_time_report(self, start_date: str, end_date: str) -> List[Dict[str, Any]]:
-        """
-        Операция 3: Валидация диапазонов дат перед выводом отчета.
+        """!
+        @brief Возвращает отчет по времени за выбранные даты.
+        @param start_date Начальная дата.
+        @param end_date Конечная дата.
+        @return Список задач с общим затраченным временем.
+        @throws ValueError Если даты пустые или начальная дата больше конечной.
         """
         if start_date == "" or end_date == "":
             raise ValueError("Поля дат не должны быть пустыми")
