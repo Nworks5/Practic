@@ -1,3 +1,9 @@
+"""!
+@file main.py
+@brief Главный файл запуска программы.
+@details Запускает выполнение модульных тестов для проверки работы базы данных и DAO-слоя приложения Timetracker.
+"""
+
 from tests import run_all_tests
 
 if __name__ == "__main__":
