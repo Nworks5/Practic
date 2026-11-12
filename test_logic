@@ -1,4 +1,8 @@
-# test_logic.py
+"""!
+@file test_logic.py
+@brief Модуль для автоматического тестирования бизнес-логики (TaskService).
+"""
+
 import sqlite3
 import os
 from database import DatabaseManager
@@ -8,8 +12,11 @@ from logic.task_service import TaskService
 DB_NAME = "timetracker.db"
 db_manager = DatabaseManager(DB_NAME)
 
+
 def prepare_fresh_database():
-    """Сброс данных и наполнение таблиц фиксированными тест-кейсами."""
+    """!
+    @brief Очищает таблицы и заполняет базу тестовыми данными перед проверкой.
+    """
     db_manager.init_database()
     
     with db_manager.get_connection() as conn:
@@ -24,7 +31,11 @@ def prepare_fresh_database():
         conn.execute("INSERT INTO timer (task_id, start_time) VALUES (1, '2026-10-12 12:00:00');")
         conn.commit()
 
+
 def run_business_logic_tests():
+    """!
+    @brief Запускает набор тестов для проверки остановки таймера, удаления задач и отчетов.
+    """
     print("[СТАРТ АВТОМАТИЧЕСКОГО ТЕСТИРОВАНИЯ СЛОЯ БИЗНЕС-ЛОГИКИ]")
     print("-" * 70)
 
@@ -83,6 +94,7 @@ def run_business_logic_tests():
 
     print("-" * 70)
     print("[ТЕСТИРОВАНИЕ КОМПОНЕНТОВ СЛУЖБЫ ЗАВЕРШЕНО]")
+
 
 if __name__ == "__main__":
     run_business_logic_tests()
