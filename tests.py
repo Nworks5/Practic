@@ -1,8 +1,18 @@
+"""!
+@file tests.py
+@brief Модуль для тестирования работы базы данных и DAO-классов.
+"""
+
 import sqlite3
 from database import DatabaseManager
 from task_dao import NotesDAO, TaskDAO, TimerDAO, TimeLogsDAO, StudentBusinessDAO
 
+
 def run_all_tests(db_name: str):
+    """!
+    @brief Запускает все проверки базы данных, ограничений и отчетов.
+    @param db_name Имя файла тестовой базы данных.
+    """
     manager = DatabaseManager(db_name)
     manager.init_database()
 
