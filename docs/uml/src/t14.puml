@@ -1,9 +1,0 @@
-@startuml
-actor U
-participant B
-U -> B : x
-rectangle "UC1" {
-B -> C : y
-}
-participant C
-@enduml

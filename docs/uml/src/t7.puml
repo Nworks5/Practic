@@ -1,8 +1,0 @@
-@startuml
-start
-:do;
-ref over A, B : UC1
-stop
-participant A
-participant B
-@enduml

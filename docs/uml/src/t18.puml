@@ -1,7 +1,0 @@
-@startuml
-node "N" {
-  artifact "a.db" as A
-  class C
-}
-C --> A
-@enduml

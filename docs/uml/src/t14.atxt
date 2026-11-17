@@ -1,9 +1,0 @@
-[From t14.puml (line 5) ]
-                         
-@startuml                
-actor U                  
-participant B            
-U -> B : x               
-rectangle "UC1" {        
-^^^^^                    
- Syntax Error?           

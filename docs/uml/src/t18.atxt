@@ -1,8 +1,0 @@
-[From t18.puml (line 4) ]
-                         
-@startuml                
-node "N" {               
-  artifact "a.db" as A   
-  class C                
-^^^^^                    
- Syntax Error?           

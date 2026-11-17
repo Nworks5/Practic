@@ -1,9 +1,0 @@
-@startuml
-actor U
-participant B
-participant C
-U -> B : x
-ref over B, C : UC1
-database D
-B -> D : q
-@enduml

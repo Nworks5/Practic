@@ -1,8 +1,0 @@
-[From t7.puml (line 4) ]
-                        
-@startuml               
-start                   
-:do;                    
-ref over A, B : UC1     
-^^^^^                   
- Syntax Error?          

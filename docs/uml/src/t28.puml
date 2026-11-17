@@ -1,9 +1,0 @@
-@startuml
-start
-:do;
-partition "UC1" {
-:step1;
-:step2;
-}
-stop
-@enduml

@@ -1,6 +1,0 @@
-@startuml
-[A] as X
-package "P" {
-  X
-}
-@enduml
