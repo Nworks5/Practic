@@ -1,0 +1,9 @@
+@startuml
+actor U
+participant A
+participant B
+U -> A : x
+A -> B : y
+ref over A, B : UC1
+B --> U : z
+@enduml

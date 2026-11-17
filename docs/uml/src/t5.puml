@@ -1,0 +1,7 @@
+@startuml
+actor A
+refframe UC1 "CRUD"
+A -> B : x
+end
+participant B
+@enduml

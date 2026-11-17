@@ -1,0 +1,8 @@
+@startuml
+start
+:do;
+group UC1 "CRUD"
+:sub step;
+end group
+stop
+@enduml

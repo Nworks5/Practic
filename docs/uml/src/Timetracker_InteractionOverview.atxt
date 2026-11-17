@@ -1,0 +1,32 @@
+[From interaction_overview.puml (line 40) ]                                          
+                                                                                     
+@startuml Timetracker_InteractionOverview                                            
+                                                                                     
+                                                                                     
+                                                                                     
+                                                                                     
+...                                                                                  
+... ( skipping 160 lines )                                                           
+...                                                                                  
+  if (Нужно вести время?) then (да)                                                  
+    |MainWindow|                                                                     
+    :«Старт»: TimerDAO.insert(task_id, now)\nтаймер идёт (состояние Running);        
+    :«Пауза» / «Продолжить»\n(внутреннее состояние таймера);                         
+    :«Стоп»: stop_and_save_timer();                                                  
+    note right                                                                       
+      duration = stop_time - start_time;                                             
+      если duration <= 0 -> ValueError,                                              
+      иначе запись сессии в time_logs                                                
+      и удаление строки из timer                                                     
+    end note                                                                         
+    |StudentBusinessDAO / SQLite|                                                    
+    :TimeLogsDAO.insert(...)\nDELETE FROM timer;                                     
+  else (нет)                                                                         
+  endif                                                                              
+                                                                                     
+  if (Работа с задачами и заметками?) then (да)                                      
+    |TaskMenuWindow|                                                                 
+    :Открыть меню задач;                                                             
+    ref over Пользователь, StudentBusinessDAO #LightBlue : UC1 «CRUD задач и заметок»
+^^^^^                                                                                
+ Syntax Error?                                                                       

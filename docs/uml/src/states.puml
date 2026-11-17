@@ -1,0 +1,66 @@
+@startuml Timetracker_StateMachine
+!theme plain
+skinparam defaultFontName "DejaVu Sans"
+title Timetracker — Диаграмма состояний программы (State Machine Diagram)
+
+state "Главный экран (Таймер)" as Main {
+    state Таймер : entry / отобразить последнюю сессию
+    state "Выбор задачи" as Pick
+    state Idle : таймер остановлен (00:00:00)
+    state Running : счёт времени идёт\n[timer] запись в БД
+    state Paused : время приостановлено
+
+    [*] --> Pick
+    Pick --> Idle : задача выбрана /\nTaskDAO.getAll()
+    Idle --> Running : «Старт» /\nTimerDAO.insert(task_id, now)
+    Running --> Paused : «Пауза»
+    Paused --> Running : «Продолжить»
+    Paused --> Idle : «Сброс» без сохранения
+    Running --> Idle : «Стоп» /\nTaskService.stop_and_save_timer()\n-> TimeLogsDAO.insert(), timer удалён
+}
+
+state "Экран задач" as Tasks {
+    state Список
+    state "Форма создания задачи" as NewTask
+    state "Форма заметки" as Note
+    state Editing : изменение is_complete / текста
+
+    [*] --> Список : TaskDAO.getAll(),\nStudentBusinessDAO.getTasksWithNotesContext()
+    Список --> NewTask : «Добавить новую»
+    NewTask --> Список : «Сохранить» /\nTaskDAO.insert()
+    NewTask --> NewTask : пустое название /\nошибка «Заполните поле»
+    Список --> Note : «Добавить заметку»
+    Note --> Список : NotesDAO.insert()
+    Список --> Editing : выбрать задачу
+    Editing --> Список : сохранить
+    Список --> Список : «Удалить» /\nTaskService.safe_delete_task():\nесть time_logs -> запрет (PermissionError)
+}
+
+state "Экран отчётов" as Reports {
+    state ВыборПериода
+    state ОтображениеОтчета
+    state ПустойОтчет
+
+    [*] --> ВыборПериода : календарь, стрелки < >
+    ВыборПериода --> ОтображениеОтчета : «Фильтр» /\nget_filtered_time_report(start, end)
+    ВыборПериода --> ВыборПериода : start > end или пусто /\nValueError «Некорректный диапазон дат»
+    ОтображениеОтчета --> ПустойОтчет : записей нет /\nсообщение «Нет данных за период»
+    ПустойОтчет --> ВыборПериода
+    ОтображениеОтчета --> ВыборПериода : изменить период
+}
+
+state Initializing : инициализация\nDatabaseManager.init_database()\nвыполнение init.sql
+state Shutdown : завершение работы,\nзакрытие соединений sqlite3
+
+[*] --> Initializing : запуск main.py
+Initializing --> Main : первый запуск /\nБД и таблицы созданы
+Main --> Tasks : «Меню задач»
+Tasks --> Main : «Назад»
+Main --> Reports : «Меню отчёта»
+Reports --> Main : «Назад»
+Main --> Shutdown : выход из приложения
+Tasks --> Shutdown : закрытие окна
+Reports --> Shutdown : закрытие окна
+Shutdown --> [*]
+
+@enduml

@@ -1,0 +1,62 @@
+@startuml Timetracker_CompositeStructure
+!theme plain
+skinparam defaultFontName "DejaVu Sans"
+skinparam wrapWidth 250
+skinparam maxMessageSize 200
+top to bottom direction
+title Timetracker — Диаграмма составной структуры программы (Composite Structure Diagram)
+
+node "Рабочая станция пользователя\n(локальный ПК, без сети)" as WS {
+
+  node "Процесс приложения Timetracker\n(main.py)" as APP {
+
+    package "Представление (GUI-слой)" as PGUI {
+      [MainWindow\nГлавный экран: таймер,\nвыбор задачи, старт/пауза/стоп] as MW
+      [TaskMenuWindow\nЭкран задач: список,\nсоздание/правка/удаление, заметки] as TW
+      [ReportMenuWindow\nЭкран отчётов: календарь,\nфильтр по датам] as RW
+    }
+
+    package "Бизнес-логика (logic/task_service.py)" as PLOGIC {
+      [TaskService\nstop_and_save_timer()\nsafe_delete_task()\nget_filtered_time_report()] as SVC <<control>>
+    }
+
+    package "Слой доступа к данным (task_dao.py, database.py)" as PDAO {
+      [DatabaseManager\nget_connection()\ninit_database()] as DBM <<boundary>>
+      [NotesDAO\ninsert(title, content)\ndelete(id)] as NDAO <<boundary>>
+      [TaskDAO\ninsert(note_id, text)\ngetAll() | delete(id)] as TDAO <<boundary>>
+      [TimerDAO\ninsert(task_id, start_time)] as TIMDAO <<boundary>>
+      [TimeLogsDAO\ninsert(task_id, start,\nduration, end)] as LDAO <<boundary>>
+      [StudentBusinessDAO\ngetFilteredTimeReport()\ngetTasksWithNotesContext()] as BDAO <<boundary>>
+    }
+
+    artifact "timetracker.db\n(файл базы данных SQLite)" as DBFILE
+    artifact "init.sql\n(DDL-скрипт инициализации БД)" as INITSQ
+  }
+}
+
+database "SQLite\nnotes | task | timer\ntime_logs | backup_log" as SQLITE
+
+MW -down-> SVC : «use» старт/стоп/сброс таймера
+TW -down-> SVC : «use» CRUD задач и заметок
+RW -down-> SVC : «use» отчёт с фильтром по датам
+MW ..> TDAO : «use» выбор задачи\n(выпадающий список)
+
+SVC --> NDAO
+SVC --> TDAO
+SVC --> TIMDAO
+SVC --> LDAO
+SVC --> BDAO
+
+NDAO --> DBM
+TDAO --> DBM
+TIMDAO --> DBM
+LDAO --> DBM
+BDAO --> DBM
+
+DBM --> DBFILE : sqlite3.connect()
+DBFILE -[hidden]down- INITSQ
+DBM ..> INITSQ : читает при первом запуске
+INITSQ ..> SQLITE : создаёт таблицы\nи индексы
+DBM --> SQLITE : PRAGMA foreign_keys = ON
+
+@enduml

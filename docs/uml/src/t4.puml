@@ -1,0 +1,7 @@
+@startuml
+actor A
+rectangle "UC1" {
+  A -> B : x
+}
+participant B
+@enduml

@@ -1,0 +1,8 @@
+@startuml
+skinparam componentStyle uml2
+package "P" {
+  class TaskService <<control>> {
+    +a() : bool
+  }
+}
+@enduml

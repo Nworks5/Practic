@@ -1,0 +1,130 @@
+@startuml Timetracker_InteractionOverview
+!theme plain
+skinparam defaultFontName "DejaVu Sans"
+skinparam wrapWidth 250
+title Timetracker — Диаграмма обзора взаимодействия (Interaction Overview Diagram)
+
+|Пользователь|
+start
+:Запускает приложение\n(main.py);
+
+|DatabaseManager|
+:init_database()\nвыполняет init.sql,\nсоздаёт таблицы БД;
+
+|MainWindow|
+:Открывается главный экран (Таймер);\nTaskDAO.getAll() — список задач;
+
+repeat
+  |Пользователь|
+  :Выбирает раздел приложения;
+
+  if (Нужно вести время?) then (да)
+    |MainWindow|
+    :«Старт»: TimerDAO.insert(task_id, now)\nтаймер идёт (состояние Running);
+    :«Пауза» / «Продолжить»\n(внутреннее состояние таймера);
+    :«Стоп»: stop_and_save_timer();
+    note right
+      duration = stop_time - start_time;
+      если duration <= 0 -> ValueError,
+      иначе запись сессии в time_logs
+      и удаление строки из timer
+    end note
+    |StudentBusinessDAO / SQLite|
+    :TimeLogsDAO.insert(...)\nDELETE FROM timer;
+  else (нет)
+  endif
+
+  if (Работа с задачами и заметками?) then (да)
+    |TaskMenuWindow|
+    :Открыть меню задач;
+    ref over Пользователь, StudentBusinessDAO #LightBlue : UC1 «CRUD задач и заметок»
+    |MainWindow|
+    :Возврат на главный экран («Назад»);
+  else (нет)
+  endif
+
+  if (Нужен отчёт за период?) then (да)
+    |ReportMenuWindow|
+    :Открыть меню отчётов,\nвыбрать даты в календаре;
+    ref over Пользователь, StudentBusinessDAO #LightGreen : UC2 «Отчёт по датам»
+    |MainWindow|
+    :Возврат на главный экран («Назад»);
+  else (нет)
+  endif
+
+  |Пользователь|
+repeat while (Продолжать работу?) is (да) not (нет)
+
+|DatabaseManager|
+:Закрытие соединения с БД;
+|Пользователь|
+stop
+
+*'--- Детализация ссылочных фреймов (UC1, UC2) ---'*
+
+== Ссылочная диаграмма UC1 «CRUD задач и заметок» ==
+
+|Пользователь|
+start
+:Создать задачу / заметку\nили удалить задачу;
+
+if (Операция?) then (создание)
+  |TaskService|
+  :проверка: название не пустое;
+  |DAO-слой|
+  :TaskDAO.insert(note_id, text)\nNotesDAO.insert(title, content);
+  |StudentBusinessDAO / SQLite|
+  :INSERT INTO task / notes;
+else (удаление)
+  |TaskService|
+  :safe_delete_task(task_id):\nSELECT COUNT(*) FROM time_logs;
+  if (Есть записи времени?) then (да)
+    |TaskMenuWindow|
+    :PermissionError:\n«Нельзя удалить задачу с записями»;
+  else (нет)
+    |DAO-слой|
+    :TaskDAO.delete(id);
+    |StudentBusinessDAO / SQLite|
+    :DELETE FROM task WHERE task_id = ?;
+  endif
+endif
+
+|TaskMenuWindow|
+:Обновить список задач;
+|Пользователь|
+stop
+
+== Ссылочная диаграмма UC2 «Отчёт по датам» ==
+
+|Пользователь|
+:Выбрать диапазон дат,\nнажать «Фильтр»;
+
+|TaskService|
+:Проверка диапазона:\nпустые поля / start > end;
+
+if (Диапазон корректен?) then (нет)
+  |ReportMenuWindow|
+  :Показать ошибку\n«Некорректный диапазон дат»;
+else (да)
+  |StudentBusinessDAO / SQLite|
+  :getFilteredTimeReport(start, end)\nSELECT SUM(duration) ... GROUP BY task_id;
+  |ReportMenuWindow|
+  if (Есть записи за период?) then (нет)
+    :Сообщение «Нет данных за период»;
+  else (да)
+    :Показать суммарное время по каждой задаче;
+  endif
+endif
+
+|Пользователь|
+stop
+
+actor "Пользователь" as Пользователь
+participant "MainWindow" as MainWindow
+participant "TaskMenuWindow" as TaskMenuWindow
+participant "ReportMenuWindow" as ReportMenuWindow
+participant "TaskService" as TaskService
+participant "DAO-слой" as DAO
+participant "StudentBusinessDAO / SQLite" as StudentBusinessDAO
+
+@enduml

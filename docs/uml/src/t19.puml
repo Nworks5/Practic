@@ -1,0 +1,9 @@
+@startuml
+node "WS" {
+  node "Proc" {
+    [X]
+    class Y
+  }
+}
+[X] --> Y
+@enduml

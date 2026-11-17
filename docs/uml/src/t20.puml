@@ -1,0 +1,7 @@
+@startuml
+node "N" {
+  artifact "a.db" as A
+}
+[A] --> [B]
+[B]
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+skinparam componentStyle uml2
+package "P" {
+  [A\n(x)] as X
+}
+[X] --> [B]
+@enduml

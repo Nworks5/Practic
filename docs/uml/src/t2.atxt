@@ -1,0 +1,8 @@
+[From t2.puml (line 4) ]
+                        
+@startuml               
+[A] as X                
+package "P" {           
+  X                     
+^^^^^                   
+ Syntax error: X        

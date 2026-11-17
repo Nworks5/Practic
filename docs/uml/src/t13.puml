@@ -1,0 +1,8 @@
+@startuml
+start
+:do;
+partition "UC1" {
+:A -> B : msg;
+}
+stop
+@enduml

@@ -1,0 +1,9 @@
+[From t24.puml (line 5) ]
+                         
+@startuml                
+actor U                  
+participant A            
+participant B            
+start                    
+^^^^^                    
+ Syntax Error?           

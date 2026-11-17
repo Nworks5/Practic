@@ -1,0 +1,9 @@
+[From t19.puml (line 5) ]
+                         
+@startuml                
+node "WS" {              
+  node "Proc" {          
+    [X]                  
+    class Y              
+^^^^^                    
+ Syntax Error?           

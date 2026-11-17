@@ -1,0 +1,8 @@
+@startuml
+participant A
+participant B
+box "GUI"
+participant A
+end box
+A -> B : x
+@enduml

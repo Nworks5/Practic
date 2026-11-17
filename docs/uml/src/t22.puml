@@ -1,0 +1,7 @@
+@startuml
+node "N" {
+  class C
+}
+C --> D
+class D
+@enduml

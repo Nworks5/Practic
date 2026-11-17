@@ -1,0 +1,9 @@
+@startuml
+actor U
+participant B
+participant C
+U -> B : x
+rectangle UC1 {
+B -> C : y
+}
+@enduml

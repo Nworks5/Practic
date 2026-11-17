@@ -1,0 +1,8 @@
+@startuml
+start
+if (a?) then (yes)
+:do1;
+else (no)
+endif
+stop
+@enduml

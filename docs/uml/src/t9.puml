@@ -1,0 +1,7 @@
+@startuml
+participant A
+participant B
+group UC1 "CRUD"
+A -> B : x
+end
+@enduml

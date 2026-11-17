@@ -1,0 +1,10 @@
+[From t21.puml (line 6) ]
+                         
+@startuml                
+node "N" {               
+  class C                
+}                        
+C --> D                  
+[D]                      
+^^^^^                    
+ Syntax Error?           

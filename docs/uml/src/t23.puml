@@ -1,0 +1,9 @@
+@startuml
+node "N" {
+  package "P" {
+    class C
+  }
+}
+C --> D
+class D
+@enduml
